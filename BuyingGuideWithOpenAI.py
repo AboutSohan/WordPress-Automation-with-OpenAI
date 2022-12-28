@@ -1,3 +1,7 @@
+"""
+IndexError: list index out of range: I have used Pixabay for images. For some keywords, there is no images on pixabay. Please change the keywords at this situation. Try to use common keywords.
+"""
+
 from httpx import get, post
 from pyfunctions import open_ai, open_ai_instruction, paragraph, verse, h2, h3, h4, image_from_url, headers, image_from_media
 from time import sleep
@@ -29,19 +33,18 @@ for keyword in keywords:
     image_kw = keyword.replace(' ', '+')
     image_api = f'https://pixabay.com/api/?key={pixabay_api_key}&q={image_kw}&image_type=photo&per_page=10&min_width=900px'
     img_url = get(image_api).json().get('hits')[random_image].get('largeImageURL')
-    ## random image funciton ends here ##
 
-    # # ## image download and uploading ##
-    # resp = get(img_url)
-    # with open(f'images/{keyword}.jpg', 'wb+') as file:
-    #     file.write(res.content)
-    #
-    # features_img = image_from_media(f'images/{keyword}.jpg')
-    #
-    # media_upload_json = 'https://localhost/demosite/wp-json/wp/v2/media'
-    # res_id = post(media_upload_json, data=features_img, headers=wp_header, verify=False)
-    # feature_img_id = res.json().get('id')
-    # # ## end of image download and uploading ##
+    # ## image download and uploading ##
+    resp = get(f'{img_url}')
+    with open(f'{keyword}.jpg', 'wb+') as file:
+        file.write(resp.content)
+        features_img = image_from_media(f'{keyword}.jpg')
+
+    media_upload_json = 'https://localhost/demosite/wp-json/wp/v2/media'
+    res_id = post(media_upload_json, files=features_img, headers=wp_header, verify=False)
+    feature_img_id = res_id.json().get('id')
+    # print(feature_img_id)
+    # end of image download and uploading #
 
     wp_content += image_from_url(img_url, keyword, f'{keyword} image')
     wp_content += h2(f'Different Types of {keyword}')
@@ -120,11 +123,11 @@ for keyword in keywords:
         'content': wp_content,
         'status': 'publish',
         'slug': wp_slug,
-        # 'featured_media': feature_img_id,
+        'featured_media': feature_img_id,
         'categories': '255',
         # 'excerpt': wp_excerpt
     }
     res = post(wp_post_api, data=auto_posting, headers=wp_header, verify=False)
     print(f'{keyword} review articles posted on wordpress')
 
-    sleep(300) # for the limitations of OpenAI, I have added delay of 5 minutes after every article.
+    sleep(600) # for the limitations of OpenAI, I have added delay of 5 minutes after every article.
