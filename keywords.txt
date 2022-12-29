@@ -1,6 +1,2 @@
 Washing Machine
-<<<<<<< HEAD
 Ice Makers
-=======
-Ice Makers
->>>>>>> 04f1c901c622deaafc16c6096c9a8a41c3ae6350
