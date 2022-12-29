@@ -36,9 +36,9 @@ for keyword in keywords:
 
     # ## image download and uploading ##
     resp = get(f'{img_url}')
-    with open(f'{keyword}.jpg', 'wb+') as file:
+    with open(f'images/{keyword}.jpg', 'wb') as file:
         file.write(resp.content)
-        features_img = image_from_media(f'{keyword}.jpg')
+        features_img = image_from_media(f'images/{keyword}.jpg')
 
     media_upload_json = 'https://localhost/demosite/wp-json/wp/v2/media'
     res_id = post(media_upload_json, files=features_img, headers=wp_header, verify=False)
